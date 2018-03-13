@@ -27,3 +27,18 @@ build() {
         scp bmoore@ci:/var/lib/jenkins/jobs/cloud-orchestrator-service/workspace/pkg/version /var/lib/jenkins/jobs/cloud-orchestrator-service/workspace$
         mvn clean install -DskipTests=true && cd pkg && make && cd ..
 }
+
+pushBuild() {
+        target=$1
+        shift
+        if [ -z "$target" ]
+        then
+                echo "Please supply target machine"
+                return
+        fi
+        echo "Building and deploying to $target"
+        build
+        if [ $? -eq 0 ]
+        then
+                ssh -i ~/cldo-sioss-rsa-4096 root@"$target" 'apt-get update && apt-get install --force-yes -y cloud-orc$        fi
+}
